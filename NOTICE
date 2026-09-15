@@ -1,0 +1,7 @@
+matrisGPU is an independent batching wrapper, not the official MatRIS project.
+API examples and unit conventions follow HPC-AI-Team/MatRIS at commit
+c16f569ca08e6905e91b64e2ee68614303e46f7f (BSD-3-Clause).
+The batching/FIRE loop was extracted from the local verified experiment scripts
+run_matris_gpu_sweep_isolated.py, run_matris_gpu_pair.py and
+run_matris_gpu_experiment.py. No model weights or upstream source tree is bundled.
+The upstream copyright and disclaimer are retained in LICENSE.

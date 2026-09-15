@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "matrisGPU"
+version = "0.1.0"
+description = "Batched MatRIS prediction and independent FIRE relaxations"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["ase>=3.23,<3.28", "numpy>=2", "pymatgen>=2024.10.3", "torch>=2.6", "matris"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
