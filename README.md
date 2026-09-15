@@ -111,32 +111,3 @@ with open("results.jsonl", "x", encoding="utf-8") as output:
         output.write(json.dumps(record, cls=MontyEncoder) + "\n")
         output.flush()
 ```
-
-一张卡一个进程、一个模型；8卡可分别设置`CUDA_VISIBLE_DEVICES`运行8个切片。
-包不自动启动多卡、重试或续算。输出JSONL可供调用者保存已完成身份，但不是FIRE状态断点文件。
-
-## 支持范围与语义
-
-- 当前仅支持`task="efsm"`、FIRE，以及`relax_cell=False`或FrechetCellFilter；不宣称支持BFGS、MD或上游所有kwargs。
-- 接受非空、三方向PBC均为True、非奇异晶胞的结构。与上游不同，本包拒绝非周期输入，不隐式扩展其晶胞。二维真空层与形变mask不等于关闭z方向PBC。
-- `success`表示实际达到`fmax`，`not_converged`表示步数用尽，`failed`仅指已知`Number of directed indices`构图断言。没有沿用旧实验“步数≤495即success”的标签。
-- known graph failure仅终止对应候选，无自动重试；OOM、其他异常和非有限预测直接抛出。不存在暗中降低batchsize的回退。
-- 力和应力需要自动求导，不使用`inference_mode`或混合精度；CUDA时关闭TF32。传入已有模型对象时，由调用者保证其设备和精度正确。
-- 默认32来自既有A100实验，是起点而非对任何结构的最优保证。当前封装采用流式输入顺序，不进行实验脚本的全队列原子数排序，因此未声称新包已复现整套吞吐数字。
-- 数值容差内的一步差异也可能导致少数优化轨迹分叉；收敛、模型磁矩和对称性筛选不证明物理磁基态。
-
-## 验证
-
-```bash
-python -m pytest -q
-# 可选：已有缓存权重的CUDA环境，额外运行两结构三步原生对照
-MATRIS_GPU_SMOKE=1 python -m pytest -q tests/test_real_gpu.py
-```
-
-测试覆盖：独立FIRE与原生ASE轨迹、失败隔离、输入身份和不修改输入、能量/应力单位、流式读取、步数上限、异常传播。短GPU对照不等价于重新跑一次完整科学实验。实际运行结果见`VALIDATION.md`。
-
-## 来源
-
-从已验证的批量预测/独立FIRE实验代码提取，没有重新实现MatRIS网络。
-基线：MatRIS commit `c16f569ca08e6905e91b64e2ee68614303e46f7f`；原实验Torch2.6.0+cu124。
-见`NOTICE`及`LICENSE`。上游模型/权重的许可仍由上游声明。
