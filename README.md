@@ -22,7 +22,6 @@ import torch
 from ase.build import bulk
 from matrisgpu import BatchCalculator
 
-torch.set_num_threads(4)
 calc = BatchCalculator(
     model="matris_10m_oam",
     task="efsm",
